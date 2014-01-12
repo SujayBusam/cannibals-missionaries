@@ -53,7 +53,6 @@ public class CannibalProblem extends UUSearchProblem{
 			this.state[2] = b;
 
 			depth = d;
-
 		}
 
 		public ArrayList<UUSearchNode> getSuccessors() {
@@ -90,9 +89,25 @@ public class CannibalProblem extends UUSearchProblem{
 			int missionariesStart = successor.state[0]; // missionaries at start bank
 			int missionariesEnd = totalMissionaries - successor.state[0]; // missionaries at destination bank
 			int cannibalsStart = successor.state[1]; // cannibals at start bank
+			int cannibalsEnd = totalCannibals - successor.state[1]; // cannibals at destination bank
 
-			return (missionariesStart == 0 || missionariesEnd == 0 || missionariesStart == cannibalsStart);
-
+			// Make sure missionaries are not outnumbered
+			if (missionariesStart >= cannibalsStart && missionariesStart != 0) {
+				if (missionariesEnd >= cannibalsEnd && missionariesEnd != 0) {
+					return true;
+				}
+			}
+			
+			if (missionariesEnd == 0) {
+				return (missionariesStart >= cannibalsStart);
+			}
+			
+			if (missionariesStart == 0) {
+				return (missionariesEnd >= cannibalsEnd);
+			}
+			
+			// At this point state must be unsafe
+			return false;
 		}
 
 		// is state valid - has an action been taken and did not exceed boat size
@@ -110,7 +125,7 @@ public class CannibalProblem extends UUSearchProblem{
 						// Number of people hasn't increased
 						missionariesStart <= state[0] && cannibalsStart <= state[1]);
 			}
-			
+
 			// Case where passengers return to bank
 			else {
 				// Make sure some action has been taken
@@ -159,7 +174,7 @@ public class CannibalProblem extends UUSearchProblem{
 			}
 
 			returnString += ("\nBoat is on " + boatSide) + "\n";
-			
+
 			returnString += ("State: " + state[0] + "," + state[1] + "," + state[2] + "\n");
 			return returnString;
 		}

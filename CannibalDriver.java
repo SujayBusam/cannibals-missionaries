@@ -46,7 +46,7 @@ public class CannibalDriver {
 //		for (UUSearchNode node: successors) {
 //			System.out.println(node);
 //		}
-		
+//		
 		ArrayList<UUSearchNode> successors2 = successors.get(0).getSuccessors();
 //		for (UUSearchNode node: successors2) {
 //			System.out.println(node);
