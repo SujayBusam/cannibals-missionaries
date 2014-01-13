@@ -97,17 +97,18 @@ public class CannibalProblem extends UUSearchProblem{
 					return true;
 				}
 			}
-			
+
 			if (missionariesEnd == 0) {
 				return (missionariesStart >= cannibalsStart);
 			}
-			
+
 			if (missionariesStart == 0) {
 				return (missionariesEnd >= cannibalsEnd);
 			}
-			
-			// At this point state must be unsafe
-			return false;
+
+			else {
+				return false;
+			}
 		}
 
 		// is state valid - has an action been taken and did not exceed boat size
@@ -154,7 +155,7 @@ public class CannibalProblem extends UUSearchProblem{
 
 		@Override
 		public int hashCode() {
-			return state[0] * 100 + state[1] * 10 + state[0];
+			return state[0] * 100 + state[1] * 10 + state[2];
 		}
 
 		@Override
@@ -179,17 +180,35 @@ public class CannibalProblem extends UUSearchProblem{
 			return returnString;
 		}
 
-		/*
-        You might need this method when you start writing 
-        (and debugging) UUSearchProblem.
-
 		@Override
 		public int getDepth() {
 			return depth;
 		}
-		 */
-
 	}
 
+	// Main method for testing
+	public static void main(String[] args) {
+		CannibalProblem mcProblem = new CannibalProblem(3, 3, 1, 0, 0, 0);
+		ArrayList<UUSearchNode> successors = mcProblem.startNode.getSuccessors();
 
+//		for (UUSearchNode node: successors) {
+//			System.out.println(node);
+//		}
+
+		ArrayList<UUSearchNode> successors2 = successors.get(0).getSuccessors();
+//		for (UUSearchNode node: successors2) {
+//			System.out.println(node);
+//		}
+
+		ArrayList<UUSearchNode> successors3 = successors2.get(0).getSuccessors();
+//		for (UUSearchNode node: successors3) {
+//			System.out.println(node);
+//		}
+		
+		ArrayList<UUSearchNode> successors4 = successors3.get(1).getSuccessors();
+		for (UUSearchNode node: successors4) {
+			System.out.println(node);
+		}
+
+	}
 }
