@@ -105,7 +105,7 @@ public abstract class UUSearchProblem {
 		// Hashmap that keeps track of visited nodes (states) and their respective depths
 		HashMap<UUSearchNode, Integer> visitedNodes = new HashMap<UUSearchNode, Integer>();
 
-		List<UUSearchNode> path = dfsrm(startNode, visitedNodes, 1, maxDepth);
+		List<UUSearchNode> path = dfsrm(startNode, visitedNodes, 0, maxDepth);
 		return path;
 	}
 
@@ -129,33 +129,40 @@ public abstract class UUSearchProblem {
 			// when goal node is reached, return a list with goal node
 			// so that its parents can be added
 			List<UUSearchNode> path = new LinkedList<UUSearchNode>();
-			((LinkedList<UUSearchNode>) path).addFirst(currentNode);
+			path.add(currentNode);
 			return path;
 		}
 
 		// recursive case
 		else {
 			// Get the successors and make sure it is not a null list
+			// Note if it is a null set, we have reached a leaf node that is not the goal
 			List<UUSearchNode> successors = currentNode.getSuccessors();
 			if (successors != null) {
 
-				// For all successors not already visited
+				// For all successors with max depth not exceeded
 				for (UUSearchNode successor: successors) {
-					if (!visited.containsKey(successor) && depth + 1 <= maxDepth) {
+					if (depth + 1 <= maxDepth) {
 
-						// If path has been found, add current node
-						List<UUSearchNode> currentList = dfsrm(successor, visited, depth + 1, maxDepth);
-						if(currentList != null) {
-							((LinkedList<UUSearchNode>) currentList).addFirst(currentNode);
-							return currentList;
-						}
+						// And for all successors that are not in hashmap, or are in hashmap 
+						// but were visited at a greater previous depth
+						if (!visited.containsKey(successor) || visited.get(successor) > depth + 1) {
 
-						// Otherwise, return a null path
-						else {
-							return null;
+							// If path exists, add current node to path that has been passed up through recursion
+							List<UUSearchNode> currentList = dfsrm(successor, visited, depth + 1, maxDepth);
+							if(currentList != null) {
+								((LinkedList<UUSearchNode>) currentList).addFirst(currentNode);
+								return currentList;
+							}
+
+							// Otherwise, return a null path
+							else {
+								return null;
+							}
 						}
 					}
 				}
+				// No valid successors if it reaches this point
 			}
 
 			// Reached a leaf that is not a goal state
@@ -163,7 +170,7 @@ public abstract class UUSearchProblem {
 				return null;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -171,11 +178,24 @@ public abstract class UUSearchProblem {
 	// set up the iterative deepening search, and make use of dfspc
 	public List<UUSearchNode> IDSearch(int maxDepth) {
 		resetStats();
-		// you write this method
+
+		// Hashmap that keeps track of visited nodes (states) and their respective depths
+		HashSet<UUSearchNode> visitedNodes = new HashSet<UUSearchNode>();
+
+		for (int i = 0; i <= maxDepth; i++) {
+			List<UUSearchNode> path = dfsrpc(startNode, visitedNodes, 0, i);
+
+			// If path found, return it
+			if (path != null) {
+				return path;
+			}
+		}
+
+		return null;
 	}
 
 	// set up the depth-first-search (path-checking version), 
-	//  but call dfspc to do the real work
+	// but call dfspc to do the real work
 	public List<UUSearchNode> depthFirstPathCheckingSearch(int maxDepth) {
 		resetStats();
 
@@ -192,9 +212,55 @@ public abstract class UUSearchProblem {
 	private List<UUSearchNode> dfsrpc(UUSearchNode currentNode, HashSet<UUSearchNode> currentPath,
 			int depth, int maxDepth) {
 
-		// you write this method
+		// Add current node to current path set
+		currentPath.add(currentNode);
 
-		return null;
+		// Base case - goal node has been found
+		if (currentNode.goalTest()) {
+			List<UUSearchNode> path = new LinkedList<UUSearchNode>();
+			path.add(currentNode);
+			return path;
+		}
+
+		// Recursive case
+		else {
+			// Get the successors and make sure it is not a null set
+			// Note if it is a null set, we have reached a leaf node that is not the goal
+			List<UUSearchNode> successors = currentNode.getSuccessors();
+			if (successors != null) {
+
+				for (UUSearchNode successor: successors) {
+					// Make sure successor isn't one that was already on current path (a parent)
+					// and doesn't exceed max depth
+					if (!currentPath.contains(successor) && depth + 1 <= maxDepth) {
+						List<UUSearchNode> path = dfsrpc(successor, currentPath, depth + 1, maxDepth);
+
+						// If path exists, add current node to path that has been passed up through recursion
+						if (path != null) {
+							((LinkedList<UUSearchNode>) path).addFirst(currentNode);
+							return path;
+						}
+
+						// Otherwise, remove current node from current path and return a null path
+						else {
+							currentPath.remove(currentNode);
+							return null;
+						}
+					}
+				}
+
+				// If it reaches this point, current node has no valid successors
+				// Remove it from the current path and return null
+				currentPath.remove(currentNode);
+				return null;
+			}
+
+			// Reached a leaf that is not the goal
+			else {
+				currentPath.remove(currentNode);
+				return null;
+			}
+		}
 	}
 
 	protected void resetStats() {
@@ -224,12 +290,18 @@ public abstract class UUSearchProblem {
 		//		for (UUSearchNode node: path) {
 		//			System.out.println(node);
 		//		}
-		
-		List<UUSearchNode> path = mcProblem.depthFirstMemoizingSearch(12);
-		
+
+		//		List<UUSearchNode> path = mcProblem.depthFirstMemoizingSearch(12);
+		//
+		//		for (UUSearchNode node: path) {
+		//			System.out.println(node);
+		//		}
+
+		List<UUSearchNode> path = mcProblem.IDSearch(100);
 		for (UUSearchNode node: path) {
 			System.out.println(node);
 		}
+
 	}
 }
 

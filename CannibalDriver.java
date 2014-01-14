@@ -6,7 +6,7 @@ import java.util.List;
 public class CannibalDriver {
 	public static void main(String args[]) {
 
-				public static final int MAXDEPTH = 5000;
+				final int MAXDEPTH = 5000;
 		
 				// interesting starting state:  
 				//  8, 5, 1  (IDS slow, but uses least memory.)
