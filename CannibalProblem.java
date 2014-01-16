@@ -2,7 +2,6 @@ package cannibals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import cannibals.UUSearchProblem.*;
 
 
 // for the first part of the assignment, you might not extend UUSearchProblem,
@@ -60,17 +59,11 @@ public class CannibalProblem extends UUSearchProblem{
 			// add actions (denoted by how many missionaries and cannibals to put
 			// in the boat) to current state. 
 
-			// You write this method.  Factoring is usually worthwhile.  In my
-			//  implementation, I wrote an additional private method 'isSafeState',
-			//  that I made use of in getSuccessors.  You may write any method
-			//  you like in support of getSuccessors.
-
 			ArrayList<UUSearchNode> successorList = new ArrayList<UUSearchNode>();
-
 
 			for (int i = 0; i <= totalMissionaries; i++) {
 				for (int j = 0; j <= totalCannibals; j++) {
-					CannibalNode successor = new CannibalNode(i, j, Math.abs(state[2] - 1), depth + 1);
+					CannibalNode successor = new CannibalNode(i, j, 1 - state[2], depth + 1);
 
 					// if state is safe, add node to the successor list
 					if (isSafeState(successor) && isValidState(successor)) {
@@ -86,10 +79,14 @@ public class CannibalProblem extends UUSearchProblem{
 		// more missionaries than cannibals on both sides of the river
 		public boolean isSafeState(CannibalNode successor) {
 
-			int missionariesStart = successor.state[0]; // missionaries at start bank
-			int missionariesEnd = totalMissionaries - successor.state[0]; // missionaries at destination bank
-			int cannibalsStart = successor.state[1]; // cannibals at start bank
-			int cannibalsEnd = totalCannibals - successor.state[1]; // cannibals at destination bank
+			// missionaries at start bank
+			int missionariesStart = successor.state[0]; 
+			// missionaries at destination bank
+			int missionariesEnd = totalMissionaries - successor.state[0]; 
+			// cannibals at start bank
+			int cannibalsStart = successor.state[1]; 			
+			// cannibals at destination bank
+			int cannibalsEnd = totalCannibals - successor.state[1];
 
 			// Make sure missionaries are not outnumbered
 			if (missionariesStart >= cannibalsStart && missionariesStart != 0) {
@@ -98,10 +95,12 @@ public class CannibalProblem extends UUSearchProblem{
 				}
 			}
 
+			// No missionaries at other side of river, so check the original side
 			if (missionariesEnd == 0) {
 				return (missionariesStart >= cannibalsStart);
 			}
 
+			// No missionaries at original side of river, so check the other side
 			if (missionariesStart == 0) {
 				return (missionariesEnd >= cannibalsEnd);
 			}
@@ -122,7 +121,8 @@ public class CannibalProblem extends UUSearchProblem{
 				// Make sure some action has been taken
 				return (!(missionariesStart == state[0] && cannibalsStart == state[1]) &&
 						// No more than boat size have crossed river
-						Math.abs(state[0] - missionariesStart) + Math.abs(state[1] - cannibalsStart) <= BOAT_SIZE &&
+						Math.abs(state[0] - missionariesStart) + Math.abs(state[1] - cannibalsStart) 
+						<= BOAT_SIZE &&
 						// Number of people hasn't increased
 						missionariesStart <= state[0] && cannibalsStart <= state[1]);
 			}
@@ -132,7 +132,8 @@ public class CannibalProblem extends UUSearchProblem{
 				// Make sure some action has been taken
 				return (!(missionariesStart == state[0] && cannibalsStart == state[1]) &&
 						// No more than boat size have crossed river
-						Math.abs(state[0] - missionariesStart) + Math.abs(state[1] - cannibalsStart) <= BOAT_SIZE &&
+						Math.abs(state[0] - missionariesStart) + Math.abs(state[1] - cannibalsStart) 
+						<= BOAT_SIZE &&
 						// Number of people hasn't decreased
 						missionariesStart >= state[0] && cannibalsStart >= state[1]);
 			}
@@ -162,22 +163,24 @@ public class CannibalProblem extends UUSearchProblem{
 		public String toString() {
 			// you write this method
 
-			String returnString = ("Missionaries left on bank: " + state[0]);
-			returnString += ("\nCannibals left on bank: " + state[1]);
+			//			String returnString = ("Missionaries left on bank: " + state[0]);
+			//			returnString += ("\nCannibals left on bank: " + state[1]);
+			//
+			//			// Determine which side boat is on
+			//			String boatSide = new String();
+			//			if (state[2] == 1) {
+			//				boatSide = "starting bank";
+			//			}
+			//			else if (state[2] == 0) {
+			//				boatSide = "destination bank";
+			//			}
+			//
+			//			returnString += ("\nBoat is on " + boatSide) + "\n";
+			//
+			//			returnString += ("State: " + state[0] + "," + state[1] + "," + state[2] + "\n");
+			//			return returnString;
 
-			// Determine which side boat is on
-			String boatSide = new String();
-			if (state[2] == 1) {
-				boatSide = "starting bank";
-			}
-			else if (state[2] == 0) {
-				boatSide = "destination bank";
-			}
-
-			returnString += ("\nBoat is on " + boatSide) + "\n";
-
-			returnString += ("State: " + state[0] + "," + state[1] + "," + state[2] + "\n");
-			return returnString;
+			return (state[0] + "," + state[1] + "," + state[2] + "\n");
 		}
 
 		@Override
@@ -188,27 +191,22 @@ public class CannibalProblem extends UUSearchProblem{
 
 	// Main method for testing
 	public static void main(String[] args) {
-		CannibalProblem mcProblem = new CannibalProblem(3, 3, 1, 0, 0, 0);
+		CannibalProblem mcProblem = new CannibalProblem(8, 5, 1, 0, 0, 0);
 		ArrayList<UUSearchNode> successors = mcProblem.startNode.getSuccessors();
-
-//		for (UUSearchNode node: successors) {
-//			System.out.println(node);
-//		}
-
-		ArrayList<UUSearchNode> successors2 = successors.get(0).getSuccessors();
-//		for (UUSearchNode node: successors2) {
-//			System.out.println(node);
-//		}
-
-		ArrayList<UUSearchNode> successors3 = successors2.get(0).getSuccessors();
-//		for (UUSearchNode node: successors3) {
-//			System.out.println(node);
-//		}
 		
-		ArrayList<UUSearchNode> successors4 = successors3.get(1).getSuccessors();
-		for (UUSearchNode node: successors4) {
-			System.out.println(node);
+		System.out.println("Successors of start node:");
+		for (UUSearchNode node: successors) {
+			System.out.print(node);
 		}
-
+		
+		System.out.println("\nSuccessors of 6, 5, 0:");
+		for (UUSearchNode node: successors.get(0).getSuccessors()) {
+			System.out.print(node);
+		}
+		
+		System.out.println("\nSuccessors of 7, 5, 1:");
+		for (UUSearchNode node: successors.get(0).getSuccessors().get(0).getSuccessors()) {
+			System.out.print(node);
+		}
 	}
 }
